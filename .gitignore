@@ -1,0 +1,36 @@
+# Node.js dependencies
+node_modules/*
+package-lock.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Diretórios de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output
+dist/
+build/
+
+# IDEs e editores
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Sistema de arquivos
+.DS_Store
+Thumbs.db
+
+# Outros arquivos temporários
+*.tmp
+*.temp
+
+# Arquivos de configuração de testes
+coverage/
