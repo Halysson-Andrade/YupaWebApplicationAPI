@@ -1,13 +1,12 @@
-const { underscoredIf } = require("sequelize/lib/utils");
-const env = require("./env")
+require("dotenv").config(); // Carregar variáveis de ambiente
 
 module.exports = {
-  dialect: 'postgres',
-  host: env.variable("host"),
-  port: 5432,
-  username: env.variable("username"),
-  password: env.variable("password"),
-  database: env.variable("database"),
+  dialect: "postgres",
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 5432,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   logging: false,
   define: {
     timestamps: true,
