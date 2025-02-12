@@ -36,6 +36,10 @@ class tb_menu_items extends Model {
           type: Sequelize.DATE,
           allowNull: false
         },
+        read: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        }
       },
       {
         sequelize,
