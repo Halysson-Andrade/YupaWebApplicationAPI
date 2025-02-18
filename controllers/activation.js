@@ -3,7 +3,7 @@ const response = require("../models/customresponse");
 const moment = require("moment");
 let ret = new response();
 const svcActivate = require("../services/activation.service");
-//s
+
 exports.update = async (req, res) => {
   this.ret = new response();
   this.ret.errorCount = 0;

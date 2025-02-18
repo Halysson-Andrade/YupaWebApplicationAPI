@@ -11,11 +11,11 @@
     "license": "ISC",
     "dependencies": {
         "@azure/eventgrid": "^5.1.1",
-        "@azure/service-bus": "^7.9.3",
-        "@azure/storage-blob": "^12.17.0",
         "@azure/identity": "^4.0.1",
         "@azure/keyvault-keys": "^4.7.2",
         "@azure/keyvault-secrets": "^4.7.0",
+        "@azure/service-bus": "^7.9.3",
+        "@azure/storage-blob": "^12.17.0",
         "azure-keyvault": "^3.0.5",
         "bcrypt": "^5.1.1",
         "bcryptjs": "^2.4.3",
@@ -38,6 +38,7 @@
         "shortid": "^2.2.16",
         "uuid": "^9.0.1",
         "validations-br": "^1.4.0",
+        "xlsx": "^0.18.5",
         "yup": "^1.4.0"
     },
     "devDependencies": {

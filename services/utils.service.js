@@ -1,8 +1,9 @@
-const fs = require("fs");
 const path = require("path");
-const config = require("./config/env");
-const account = config.variable("BLOB_STORAGE_ACCOUNT");
-const accountKey =config.variable("BLOB_STORAGE_ACCOUNTKEY");
+const axios = require('axios');
+const fs = require('fs').promises; // Para salvar localmente, se necessário
+const config = require('../config/env')
+const account = "vexia";
+const accountKey = config.variable(BLOB_KEY);
 const {
   ContainerClient,
   StorageSharedKeyCredential,
@@ -128,6 +129,39 @@ async function GetFilesByName(containerName, fileName) {
     // console.log(blob);
   }
 }
+
+async function uploadExcelToBlob(containerName, folderName, fileName, fileType, base64Data) {
+  let ret = "";
+  try {
+    const containerClient = new ContainerClient(
+      `https://${account}.blob.core.windows.net/${containerName}`,
+      sharedKeyCredential
+    );
+
+    // Cria o container se não existir
+    await containerClient.createIfNotExists();
+
+    const blobClient = containerClient.getBlockBlobClient(`${folderName}/${fileName}`);
+
+    // Se o Base64 incluir um cabeçalho, remova-o
+    const base64ContentArray = base64Data.split(',');
+    const base64String = base64ContentArray.length > 1 ? base64ContentArray[1] : base64ContentArray[0];
+
+    // Converter Base64 para Buffer
+    const buffer = Buffer.from(base64String, 'base64');
+
+    // Fazer upload do Buffer com tipo de conteúdo definido para Excel
+    await blobClient.upload(buffer, buffer.byteLength, {
+      blobHTTPHeaders: { blobContentType: fileType || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+    });
+
+    ret = blobClient.url;
+  } catch (error) {
+    console.log("Error uploading Excel file: ", error.message);
+  }
+
+  return ret;
+}
 async function GetAllFiles(containerName, folderName) {
   const blobServiceClient = new BlobServiceClient(
     `https://${account}.blob.core.windows.net`,
@@ -189,6 +223,21 @@ async function streamToBuffer(readableStream) {
     readableStream.on("error", reject);
   });
 }
+
+async function downloadFileFromUrl(fileUrl) {
+  let ret = "";
+  try {
+    const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+    const contentType = response.headers['content-type'];
+    const base64Data = Buffer.from(response.data).toString("base64");
+    ret = `data:${contentType};base64,${base64Data}`;
+    console.log("Arquivo baixado com sucesso!");
+  } catch (error) {
+    console.log("Erro ao fazer download:", error.message);
+  }
+
+  return ret;
+}
 module.exports = {
   parseNumber,
   saveFile,
@@ -197,4 +246,6 @@ module.exports = {
   saveFileBlobStoreBase64,
   GetFilesByName,
   GetAllFiles,
+  uploadExcelToBlob,
+  downloadFileFromUrl
 };
