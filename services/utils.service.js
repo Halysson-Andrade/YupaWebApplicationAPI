@@ -3,7 +3,7 @@ const axios = require('axios');
 const fs = require('fs').promises; // Para salvar localmente, se necessário
 const config = require('../config/env')
 const account = "vexia";
-const accountKey = config.variable(BLOB_KEY);
+const accountKey = config.variable('BLOB_KEY');
 const {
   ContainerClient,
   StorageSharedKeyCredential,
