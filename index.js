@@ -65,4 +65,6 @@ startServer().then(() => {
   require("./routes/profiles")(app);
   require("./routes/register")(app);
   require("./routes/uploads")(app);
+  require("./routes/charts")(app);
+  require("./routes/chartsFilter")(app);
 });
