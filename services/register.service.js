@@ -82,6 +82,43 @@ async function newUser(usr) {
   return this.ret;
 }
 
+async function readOne(id) {
+  try {
+    this.ret = new response();
+    this.ret.errorCount = 0;
+    this.ret.errors = [];
+    this.ret.timeReceivedFromBack = moment().valueOf();
+    let read = []
+    let user = await tb_user.findByPk(id);
+    user.dataValues.permissions = []
+    user.dataValues.systems = []
+
+    let permissions = await tb_users_permissions.findAll({
+      where: {
+        usr_id: user.usr_id
+      }
+    });
+
+    permissions.forEach(element => {
+      let id = element.pms_id
+      user.dataValues.permissions.push(id)
+    });
+
+    read = user
+    this.ret.data = read;
+    this.ret.timeSentFromBack = moment().valueOf();
+    this.ret.httpStatus = 200;
+  } catch (error) {
+    console.log(error);
+    this.ret.errorCount = 1;
+    this.ret.data = {};
+    this.ret.httpStatus = 401;
+    this.ret.errors.push(error.message);
+    this.ret.timeSentFromBack = moment().valueOf();
+  }
+  return this.ret;
+}
+
 async function updateUser(usr) {
   let ret
   this.ret = new response();
@@ -157,5 +194,6 @@ async function destroyUser(usr) {
 module.exports = {
   newUser,
   destroyUser,
-  updateUser
+  updateUser,
+  readOne
 };

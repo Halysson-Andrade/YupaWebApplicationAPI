@@ -13,8 +13,13 @@ module.exports = (app) => {
     verifyToken.checkPermission(req, res, next, 4); // ler usuários 
   }, verifyToken.verifyToken, c.read);
 
+  router.get("/read", (req, res, next) => {
+    verifyToken.checkPermission(req, res, next, 4); // ler  1 usuário
+  }, verifyToken.verifyToken, c.index);
+
+
   router.delete("/:usr_id", (req, res, next) => {
-    verifyToken.checkPermission(req, res, next, 4); // deletar usuários 
+    verifyToken.checkPermission(req, res, next, 2); // deletar usuários 
   }, verifyToken.verifyToken, c.destroy);
 
   router.put("/", (req, res, next) => {

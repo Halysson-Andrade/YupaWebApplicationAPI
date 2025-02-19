@@ -4,7 +4,7 @@ module.exports = (app) => {
   const env = require("../config/env");
   const baseUrlApi = env.variable("baseApiUrl");
 
-  router.post("/", c.update);
+  router.patch("/", c.update);
   
 
   app.use(baseUrlApi + "/forgot", router);

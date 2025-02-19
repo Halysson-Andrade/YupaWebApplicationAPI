@@ -100,6 +100,34 @@ exports.read = async (req, res) => {
   }
   return res.status(this.ret.httpStatus).json(this.ret);
 };
+
+exports.index = async (req, res) => {
+  this.ret = new response();
+  this.ret.errorCount = 0;
+  this.ret.errors = [];
+  try {
+    this.ret.timeSentFromClient = req.body.timeSentFromClient;
+    this.ret.timeReceivedFromBack = moment().valueOf();
+
+    let result = await svcRegister.readOne(req.query.usr_id)
+    if (result.errorCount > 0) {
+      this.ret = result;
+      throw Error(result.errors[0]);
+    }
+    this.ret.data = []
+    this.ret.data.push(result.data);
+    this.ret.timeSentFromBack = moment().valueOf();
+    this.ret.httpStatus = 200;
+  } catch (error) {
+    this.ret.data = {};
+    this.ret.errors.push(error.message);
+    this.ret.errorCount = this.ret.errors.length;
+    this.ret.httpStatus = 400;
+  }
+  return res.status(this.ret.httpStatus).json(this.ret);
+};
+
+
 exports.update = async (req, res) => {
   this.ret = new response();
   this.ret.errorCount = 0;
