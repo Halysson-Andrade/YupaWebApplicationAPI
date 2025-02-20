@@ -1,10 +1,14 @@
 const tb_table = require("../models/tb_imports")
 const s = require("../services/profile.services")
+const uploadingAlmani = require("../services/uploadingAlmani.service")
 const xls = require('../services/excel.service');
 const utils = require('./utils.service')
 const { Op } = require('sequelize');
 const response = require("../models/customresponse");
 const moment = require("moment");
+const tb_imports = require("../models/tb_imports");
+const tb_imports_datas = require("../models/tb_imports_datas");
+const tb_imports_datas_erros = require("../models/tb_imports_datas_erros");
 
 async function read() {
   try {
@@ -12,19 +16,23 @@ async function read() {
     this.ret.errorCount = 0;
     this.ret.errors = [];
     this.ret.timeReceivedFromBack = moment().valueOf();
-    let data = {}
-    data.imp_status =0
-    data.imp_name ='teste'
-    data.imp_container_name ='imp_container_name'
-    data.imp_blob_path ='imp_blob_path'
-    data.total_imported =0
-    data.Error =0
-    data.ErrorResults =[{teste:'teste'}]
-    data.noErrorResults =[{teste:'teste'}]
+    let read = []
+    let data = await tb_imports.findAll();
+    let dataNoError = await tb_imports_datas.findAll();
+    let dataError = await tb_imports_datas_erros.findAll();
 
-    let read =[]
-    read.push(data)
-    this.ret.data =  {read} ;
+    for (let item of data) {
+      let totalNoError = dataNoError.filter(x => x.imp_id == item.imp_id).length;
+      let totalDataError = dataError.filter(x => x.imp_id == item.imp_id).length;
+      
+      item.total_imported = totalNoError + totalDataError
+      item.Error = totalDataError
+      item.ErrorResults = dataError.filter(x => x.imp_id == item.imp_id)
+      item.noErrorResults = dataNoError.filter(x => x.imp_id == item.imp_id)
+
+      read.push(item)
+    }
+    this.ret.data = { read };
     this.ret.timeSentFromBack = moment().valueOf();
     this.ret.httpStatus = 200;
   } catch (error) {
@@ -109,7 +117,7 @@ async function create(obj) {
     );
 
     create.imp_blob_path = fileUrl
-    create.imp_name =`id_${create.imp_id}_${obj.fileName}`
+    create.imp_name = `id_${create.imp_id}_${obj.fileName}`
     await create.save();
 
     let dataResponse = await xls.readExcelFile(obj.base64, 0);
@@ -119,11 +127,11 @@ async function create(obj) {
       throw new Error(dataResponse.errors[0]);
     }
 
-    /*let employeeImportation = await s.create(dataResponse, create);
-    if (employeeImportation.errorCount > 0) {
-      this.ret = employeeImportation;
-      throw Error(employeeImportation.errors[0]);
-    }*/
+    let importationToCreate = await uploadingAlmani.create(dataResponse, create);
+    if (importationToCreate.errorCount > 0) {
+      this.ret = importationToCreate;
+      throw Error(importationToCreate.errors[0]);
+    }
 
     this.ret.data = { result: true };
     this.ret.timeSentFromBack = moment().valueOf();
@@ -146,8 +154,8 @@ async function destroy(obj) {
     this.ret.errors = [];
     this.ret.timeSentFromClient = obj.timeSentFromClient;
     this.ret.timeReceivedFromBack = moment().valueOf();
-    
-    this.ret.data = {  };
+
+    this.ret.data = {};
     this.ret.timeSentFromBack = moment().valueOf();
     this.ret.httpStatus = 200;
   } catch (error) {
