@@ -56,7 +56,7 @@ exports.index = async (req, res) => {
       Curveprot] = await Promise.all([
         //loadingCharts.loadingSumaryChartPie(),
         //loadingCharts.loadingDaysChartPie(),
-        loadingCharts.loadingResultsChartBar(),
+        loadingCharts.loadingResultsChartBar(startDate,endDate),
         //loadingCharts.loadingResultsChartBoss(),
         //loadingCharts.loadingPetrolsChartPie(),
         //loadingCharts.loadingPetrolChartBoss(),
@@ -66,6 +66,7 @@ exports.index = async (req, res) => {
       ]);
     //Charts//
     let bar = barResult.data.chart
+    let kanban = barResult.data.kanban
     let techniciansData = []
 
     //Details//
@@ -93,7 +94,7 @@ exports.index = async (req, res) => {
     });*/
   
    
-    ret.data = { EChartsData: { techniciansData }, EChartsOption: { bar } };
+    ret.data = { EChartsData: { techniciansData }, EChartsOption: { bar }, EChartskanban:{kanban} };
     ret.httpStatus = 200;
   } catch (error) {
     ret.data = {};

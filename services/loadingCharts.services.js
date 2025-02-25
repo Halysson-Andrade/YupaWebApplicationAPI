@@ -1,6 +1,19 @@
 const response = require("../models/customresponse");
+const tb_imports_datas = require("../models/tb_imports_datas");
 const dataTemplate = require("../services/dataTemplate")
 const moment = require("moment");
+const { Op } = require("sequelize");
+
+function getRandomColor() {
+  const letters = '89ABCDEF';  // Valores mais altos para cores mais claras
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * letters.length)];
+  }
+  return color;
+}
+
+
 // Função para contar os registros correspondentes por ID
 function contarDetalhesPorID(array, xAxis) {
   let contagem = new Array(xAxis.length).fill(0); // Inicializa array com 0s para todos os IDs
@@ -13,15 +26,23 @@ function contarDetalhesPorID(array, xAxis) {
       let days = []
       itensDetails.forEach(element => {
         let dayFound = days.indexOf(element.toa_rs_ticket_date)
-        if(dayFound == -1 && element.toa_rs_ticket_date){
+        if (dayFound == -1 && element.toa_rs_ticket_date) {
           days.push(element.toa_rs_ticket_date)
         }
       });
-      count = count /days.length;
+      count = count / days.length;
       contagem[index] += count.toFixed(0); // Adiciona o total de registros em 'details' para o ID correspondente
     }
   });
   return contagem;
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Meses começam de 0
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function contarDetalhesPorIDProt(array, xAxis) {
@@ -35,11 +56,11 @@ function contarDetalhesPorIDProt(array, xAxis) {
       let days = []
       itensDetails.forEach(element => {
         let dayFound = days.indexOf(element.pth_rs_data)
-        if(dayFound == -1 && element.pth_rs_data){
+        if (dayFound == -1 && element.pth_rs_data) {
           days.push(element.pth_rs_data)
         }
       });
-      count = count /days.length;
+      count = count / days.length;
       contagem[index] += count.toFixed(0); // Adiciona o total de registros em 'details' para o ID correspondente
     }
   });
@@ -198,7 +219,7 @@ async function loadingSumaryChartPie(obj, objNoFoun) {
         }
       ]
     };
-    
+
 
     let read = {}
     read.data = data
@@ -532,27 +553,74 @@ async function loadingPetrolsChartPie(obj) {
   return ret;
 }
 
-async function loadingResultsChartBar() {
+async function loadingResultsChartBar(start, end) {
   const ret = new response();
   ret.errorCount = 0;
   ret.errors = [];
   ret.timeReceivedFromBack = moment().valueOf();
+  const startDate = formatDate(start);
+  const endDate = formatDate(end);
+
+  let chartData = await tb_imports_datas.findAll({
+    where: {
+      impd_start_date: {
+        [Op.between]: [start, end]
+      }
+    }
+  });
+
   try {
-    let data = [
+    // Agrupa os dados por data e cria o novo formato de objeto
+    let data = chartData.reduce((acc, item) => {
+      const date = item.impd_start_date;
+      let group = acc.find(group => group.name === date);
+
+      if (!group) {
+        group = { name: date, details: [] };
+        acc.push(group);
+      }
+
+      group.details.push({
+        Placa: item.car_plate,
+        Data_Inicio: item.impd_start_date,
+        Previsao_de_Conclusao: item.impd_target_date,
+        Tranferencia_para_UF: item.impd_uf_transfer,
+        Kit_doc_Completo: item.impd_complete_kit,
+        Restricoes: item.impd_restrition,
+        Debitos_Veiculares: item.impd_debit,
+        Comunicacao_de_Venda: item.impd_sale_com,
+        Vistoria_Veicular: item.impd_vistory_complete,
+        Pendencias_Comprador: item.impd_saler_pending,
+        Novo_CRLV_Disponível: item.impd_crlv_avaible,
+        Necessario_Trocar_Placa: item.impd_plate_change,
+        Concluido: item.impd_fineshed,
+      });
+      return acc;
+    }, []);
+
+
+
+    /*let data = [
       {
         name: '01/02/2024',
-        details: [{nome:'Halysson', idade: 12}]
+        details: [{ nome: 'Halysson', idade: 12 }]
       },
       {
         name: '02/02/2024',
-        details: [{nome:'Halysson', idade: 12}]
+        details: [{ nome: 'Halysson', idade: 12 }]
       },
       {
         name: '03/02/2024',
-        details: [{nome:'Halysson', idade: 12}]
+        details: [{ nome: 'Halysson', idade: 12 }]
       },
-    ];
+    ];*/
+    let dataChart = []
+    let dataSerie = []
 
+    data.forEach(element => {
+      dataChart.push(element.name)
+      dataSerie.push({ value: element.details.length, itemStyle: { color: getRandomColor() } })
+    });
     let bar = {
       color: ['#3398DB'],
       tooltip: {
@@ -570,7 +638,7 @@ async function loadingResultsChartBar() {
       xAxis: [
         {
           type: 'category',
-          data: ['01/02/2024', '02/02/2024', '03/02/2024'],
+          data: dataChart,
           axisLabel: {
             rotate: 0,
             interval: 0
@@ -586,11 +654,7 @@ async function loadingResultsChartBar() {
         {
           name: '',
           type: 'bar',
-          data: [
-            { value: 10, itemStyle: { color: '#3285a8' } },
-            { value: 20, itemStyle: { color: '#f5d142' } },
-            { value: 30, itemStyle: { color: '#f55142' } }
-          ],
+          data: dataSerie,
           label: {
             show: true,
             position: 'top',
@@ -600,9 +664,18 @@ async function loadingResultsChartBar() {
         },
       ]
     }
+    
+    
     let read = {}
     read.chart = bar
     read.data = data
+
+    const restricao = chartData.filter(item => item.impd_restrition === true).length;
+    const debits = chartData.filter(item => item.impd_debit === true).length;
+    const pend = chartData.filter(item => item.impd_saler_pending === true).length;
+    const finalizados = chartData.filter(item => item.impd_fineshed === true).length;
+
+    read.kanban = {restricao: restricao, debits: debits, pend: pend, finalizados: finalizados}
     ret.data = read;
     ret.httpStatus = 200;
   } catch (error) {
@@ -1157,7 +1230,7 @@ async function loadingResultsProtLine(obj) {
         } else {
 
         }
-      }else{
+      } else {
 
       }
     });

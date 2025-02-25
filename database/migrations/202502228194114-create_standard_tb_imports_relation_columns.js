@@ -19,6 +19,7 @@ module.exports = {
     insert into tb_imports_relation_columns select 13,'impd_plate_change','Necessário Trocar Placa',now(),now();
     insert into tb_imports_relation_columns select 14,'impd_fineshed','Concluido',now(),now();
     
+    
     SELECT SETVAL('public.tb_imports_relation_columns_impr_id_seq', 15, false);
     
     `;
