@@ -12,8 +12,9 @@ const tb_filters = require('../models/tb_filters');
 const tb_imports_datas = require('../models/tb_imports_datas');
 const tb_imports_datas_erros = require('../models/tb_imports_datas_erros');
 const tb_imports_relation_columns = require('../models/tb_imports_relation_columns');
+const tb_cars = require('../models/tb_cars');
 
-const models = [tb_menu_items,tb_permissions,tb_profiles,tb_profiles_menus,tb_users_permissions,tb_users,tb_imports,tb_filters,tb_imports_datas,tb_imports_datas_erros,tb_imports_relation_columns];
+const models = [tb_menu_items,tb_permissions,tb_profiles,tb_profiles_menus,tb_users_permissions,tb_users,tb_imports,tb_filters,tb_imports_datas,tb_imports_datas_erros,tb_imports_relation_columns,tb_cars];
 
 class Database{
   constructor(){

@@ -43,7 +43,7 @@ exports.read = async (req, res) => {
     this.ret.timeSentFromClient = req.body.timeSentFromClient;
     this.ret.timeReceivedFromBack = moment().valueOf();
 
-    let result = await s.readOne(req.query.brc_id)
+    let result = await s.readData()
     if (result.errorCount > 0) {
       this.ret = result;
       throw Error(result.errors[0]);

@@ -25,12 +25,12 @@ async function read() {
       let totalNoError = dataNoError.filter(x => x.imp_id == item.imp_id).length;
       let totalDataError = dataError.filter(x => x.imp_id == item.imp_id).length;
       
-      item.total_imported = totalNoError + totalDataError
-      item.Error = totalDataError
-      item.ErrorResults = dataError.filter(x => x.imp_id == item.imp_id)
-      item.noErrorResults = dataNoError.filter(x => x.imp_id == item.imp_id)
+      item.dataValues.total_imported = totalNoError + totalDataError
+      item.dataValues.Error = totalDataError
+      item.dataValues.ErrorResults = dataError.filter(x => x.imp_id == item.imp_id)
+      item.dataValues.noErrorResults = dataNoError.filter(x => x.imp_id == item.imp_id)
 
-      read.push(item)
+      read.push(item.dataValues )
     }
     this.ret.data = { read };
     this.ret.timeSentFromBack = moment().valueOf();
@@ -46,14 +46,15 @@ async function read() {
   return this.ret;
 }
 
-async function readOne(brc_id) {
+async function readData() {
   try {
     this.ret = new response();
     this.ret.errorCount = 0;
     this.ret.errors = [];
     this.ret.timeReceivedFromBack = moment().valueOf();
-
-    this.ret.data = {};
+    let read = []
+    read = await tb_imports_datas.findAll({})
+    this.ret.data = {read};
     this.ret.timeSentFromBack = moment().valueOf();
     this.ret.httpStatus = 200;
   } catch (error) {
@@ -99,9 +100,10 @@ async function create(obj) {
 
     let importation = [];
     let imp_container_name = 'vexia';
-
+    await tb_table.update({ imp_status: 0 }, { where: {} });
+    
     let create = await tb_table.create({
-      imp_status: 0,
+      imp_status: 1,
       imp_name: '',
       imp_container_name: 'vexia',
       imp_blob_path: '',
@@ -174,5 +176,5 @@ module.exports = {
   destroy,
   read,
   update,
-  readOne
+  readData
 };

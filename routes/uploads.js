@@ -14,6 +14,10 @@ module.exports = (app) => {
     verifyToken.checkPermission(req, res, next, 23); // Read
   }, verifyToken.verifyToken, c.index);
 
+  router.get("/data", (req, res, next) => {
+    verifyToken.checkPermission(req, res, next, 23); // Read
+  }, verifyToken.verifyToken, c.read);
+
   /*router.get("/read", (req, res, next) => {
     verifyToken.checkPermission(req, res, next, 23); // ReadOne
   }, verifyToken.verifyToken, c.read);

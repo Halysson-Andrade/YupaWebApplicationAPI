@@ -7,6 +7,7 @@ const tb_imports = require("../models/tb_imports");
 const tb_imports_datas = require("../models/tb_imports_datas");
 const tb_imports_datas_erros = require("../models/tb_imports_datas_erros");
 const tb_imports_relation_columns = require("../models/tb_imports_relation_columns");
+const tb_cars = require("../models/tb_cars");
 
 async function create(dataResponse, create) {
   try {
@@ -34,7 +35,7 @@ async function create(dataResponse, create) {
       }
 
       let newRecord = { ...record, }; // Clona o objeto original
-      newRecord.impd_status = 0;
+      newRecord.impd_status = 1;
       newRecord.imp_id = create.imp_id;
 
       for (let column of columnsRelations) {
@@ -56,9 +57,31 @@ async function create(dataResponse, create) {
       return newRecord;
     });
     let destroy = await tb_imports_datas.destroy({
-      where:{},
+      where: {},
       truncate: true,
     });
+    const carsToCreate = [];
+
+    for (const element of updatedData) {
+      let car_plate = element.car_plate;
+      let isCarFound = await tb_cars.findByPk(car_plate);
+
+      if (!isCarFound) {  // Correção: findByPk retorna null se não encontrar o registro
+        carsToCreate.push({
+          car_plate: car_plate,
+          car_status: 1,
+          car_name: "N/A",
+          car_model: "N/A",
+          car_collor: "N/A",
+          car_year: "N/A",
+          car_chacci: "N/A",
+          car_informations: "N/A"
+        });
+      }
+    }
+    if (carsToCreate.length > 0) {
+      await tb_cars.bulkCreate(carsToCreate);
+    }
     if (updatedData.length > 0) {
       await tb_imports_datas.bulkCreate(updatedData);
     } else {
