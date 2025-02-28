@@ -48,6 +48,21 @@ exports.read = async (req, res) => {
       this.ret = result;
       throw Error(result.errors[0]);
     }
+    
+result.data.read.forEach(record => {
+  // Verifica se impd_start_date existe e transforma
+  if (record.impd_start_date) {
+    const startDate = record.impd_start_date.split('-'); // Divide a data em [aaaa, mm, dd]
+    record.impd_start_date = `${startDate[2]}/${startDate[1]}/${startDate[0]}`; // Rearranja para dd-mm-aaaa
+  }
+
+  // Verifica se impd_target_date existe e transforma
+  if (record.impd_target_date) {
+    const targetDate = record.impd_target_date.split('-'); // Divide a data em [aaaa, mm, dd]
+    record.impd_target_date = `${targetDate[2]}/${targetDate[1]}/${targetDate[0]}`; // Rearranja para dd-mm-aaaa
+  }
+});
+
     this.ret.data = result.data.read;
     this.ret.timeSentFromBack = moment().valueOf();
     this.ret.httpStatus = 200;
