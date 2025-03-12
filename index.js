@@ -67,4 +67,6 @@ startServer().then(() => {
   require("./routes/uploads")(app);
   require("./routes/charts")(app);
   require("./routes/chartsFilter")(app);
+  require("./routes/documents")(app);
+  require("./routes/ufs")(app);
 });
