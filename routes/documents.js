@@ -26,5 +26,5 @@ module.exports = (app) => {
     verifyToken.checkPermission(req, res, next, 3); // atualizar  
   }, verifyToken.verifyToken, c.update);
 
-  app.use(baseUrlApi + "/ufs", router);
+  app.use(baseUrlApi + "/documents", router);
 };

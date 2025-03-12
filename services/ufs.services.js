@@ -8,11 +8,7 @@ async function read() {
     this.ret.errorCount = 0;
     this.ret.errors = [];
     this.ret.timeReceivedFromBack = moment().valueOf();
-
-    let read = []
-    let result = await tb_table.findAll({})// inserir informações adicionais como ordenação etc
-    read.push(result);
-
+    let read = await tb_table.findAll({})// inserir informações adicionais como ordenação etc
     this.ret.data = { read };
     this.ret.timeSentFromBack = moment().valueOf();
     this.ret.httpStatus = 200;
@@ -34,7 +30,7 @@ async function readOne(ID) {
     this.ret.errors = [];
     this.ret.timeReceivedFromBack = moment().valueOf();
     let read = []
-    let result = await tb_table.findByPk(cmp_id);
+    let result = await tb_table.findByPk(ID);
     read.push(result);
     this.ret.data = { read };
     this.ret.timeSentFromBack = moment().valueOf();
@@ -58,7 +54,7 @@ async function update(obj) {
     this.ret.timeReceivedFromBack = moment().valueOf();
     
     let registerDataToUpdate = obj
-    let registerToUpdate = await tb_table.findByPk(registerDataToUpdate.id)//Informar o ID do registro que será atualizado
+    let registerToUpdate = await tb_table.findByPk(registerDataToUpdate.uf_id)//Informar o ID do registro que será atualizado
     if (registerToUpdate) {
       Object.keys(registerDataToUpdate).forEach(key => {
         registerToUpdate[key] = registerDataToUpdate[key];

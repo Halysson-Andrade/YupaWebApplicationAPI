@@ -44,7 +44,7 @@ exports.read = async (req, res) => {
     this.ret.timeSentFromClient = req.body.timeSentFromClient;
     this.ret.timeReceivedFromBack = moment().valueOf();
 
-    let result = await s.readOne(req.query.cmp_id)
+    let result = await s.readOne(req.query.uf_id)
     if (result.errorCount > 0) {
       this.ret = result;
       throw Error(result.errors[0]);
@@ -94,7 +94,7 @@ exports.destroy = async (req, res) => {
     this.ret.timeSentFromClient = req.body.timeSentFromClient;
     this.ret.timeReceivedFromBack = moment().valueOf();
    
-    let result = await s.destroy(req.query.cmp_id)
+    let result = await s.destroy(req.query.uf_id)
     if (result.errorCount > 0) {
       this.ret = result;
       throw Error(result.errors[0]);
