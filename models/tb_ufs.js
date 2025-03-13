@@ -18,6 +18,10 @@ class tb_ufs extends Model {
           type: Sequelize.BOOLEAN,
           allowNull: false,
         },
+        uf_days: {
+          type: Sequelize.INTEGER,
+          allowNull: false
+        },
         uf_name: {
           type: Sequelize.STRING,
           allowNull: false,
