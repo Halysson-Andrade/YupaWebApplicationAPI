@@ -100,7 +100,7 @@ async function create(obj) {
 
     let importation = [];
     let imp_container_name = 'vexia';
-    await tb_table.update({ imp_status: 0 }, { where: {} });
+    //await tb_table.update({ imp_status: 0 }, { where: {} });
     
     let create = await tb_table.create({
       imp_status: 1,
