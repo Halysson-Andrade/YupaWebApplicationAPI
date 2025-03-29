@@ -43,7 +43,10 @@ exports.index = async (req, res) => {
     let countDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
     countDays = countDays + 1
     const filterSent = req.body.arrayData
-    
+    if(startDate == ''){
+      startDate ='01/01/2025'
+      endDate ='01/01/2029'
+    }
     const [
       //result,
       //days,

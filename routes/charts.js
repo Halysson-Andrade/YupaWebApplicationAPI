@@ -13,7 +13,7 @@ module.exports = (app) => {
   }, verifyToken.verifyToken, c.index);*/
 
     //router.get("/", c.index);  
-    router.post("/", (req, res, next) => {
+    router.get("/", (req, res, next) => {
       verifyToken.checkPermission(req, res, next, 26); // 
     }, verifyToken.verifyToken, c.index);
 

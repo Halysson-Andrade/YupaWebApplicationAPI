@@ -17,14 +17,16 @@ module.exports = (app) => {
   router.get("/data", (req, res, next) => {
     verifyToken.checkPermission(req, res, next, 23); // Read
   }, verifyToken.verifyToken, c.read);
+  
+  router.put("/", (req, res, next) => {
+    verifyToken.checkPermission(req, res, next,24 ); // Update
+  }, verifyToken.verifyToken, c.update);
 
   /*router.get("/read", (req, res, next) => {
     verifyToken.checkPermission(req, res, next, 23); // ReadOne
   }, verifyToken.verifyToken, c.read);
 
-  router.put("/", (req, res, next) => {
-    verifyToken.checkPermission(req, res, next,24 ); // Update
-  }, verifyToken.verifyToken, c.update);
+  
 
   router.delete("/", (req, res, next) => {
     verifyToken.checkPermission(req, res, next, 25); // Delete
